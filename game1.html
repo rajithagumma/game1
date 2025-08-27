@@ -26,51 +26,60 @@
   <body onload="whenloaded()">
     <script>
       function tmpmouse(e) {
-        MouseX =
-          ((e.clientX - psy_canvas.getBoundingClientRect().left) * 800) /
-          psy_canvas.getBoundingClientRect().width;
-        MouseY =
-          ((e.clientY - psy_canvas.getBoundingClientRect().top) * 600) /
-          psy_canvas.getBoundingClientRect().height;
-        if (MouseX > 175 && MouseX < 625 && MouseY > 125 && MouseY < 475) {
-          window.removeEventListener("mousedown", tmpmouse, false);
-          let elem = document.getElementById("cbox");
-          if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-          } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-          } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-          }
+        const canvas = document.getElementById("exp");
+        const rect = canvas.getBoundingClientRect();
+
+        // Convert client coords -> canvas coords (handles CSS scaling)
+        const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        // Red box covers the entire canvas, so any click within the canvas qualifies
+        const insideCanvas =
+          mouseX >= 0 &&
+          mouseX <= canvas.width &&
+          mouseY >= 0 &&
+          mouseY <= canvas.height;
+
+        if (insideCanvas) {
+          // Stop further clicks from retriggering
+          canvas.removeEventListener("mousedown", tmpmouse, false);
+
+          const elem = document.getElementById("cbox");
+          requestFullscreen(elem);
 
           setTimeout(() => {
-            main();
+            // Your start function
+            if (typeof main === "function") main();
           }, 300);
         }
       }
+      function requestFullscreen(elem) {
+        if (document.fullscreenElement) return; // already fullscreen
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+        else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+      }
 
       function whenloaded() {
-        tmp1 = document.getElementById("exp");
-        tmp2 = tmp1.getContext("2d");
-        tmp2.fillStyle = "black";
-        tmp2.fillRect(0, 0, 800, 600);
-        tmp2.fillStyle = "rgb(255,0,0)";
-        tmp2.fillRect(175, 125, 450, 350);
-        tmp2.fillStyle = "yellow";
-        tmp2.font = "24px Arial";
-        tmp2.textAlign = "center";
-        tmp2.fillText("Click to start", 400, 300);
-        window.addEventListener("mousedown", tmpmouse, false);
-        var canvasbox = document.getElementById("cbox");
-        iswebkit = RegExp("webkit").test(navigator.userAgent.toLowerCase());
-        // canvasbox.addEventListener(
-        //   iswebkit ? "webkitfullscreenchange" : "fullscreenchange",
-        //   (event) => {
-        //     if (document.fullscreenElement == null) {
-        //       psy_screen_scale(1, false);
-        //     }
-        //   }
-        // );
+        const canvas = document.getElementById("exp");
+        const ctx = canvas.getContext("2d");
+
+        // Draw background + red box (full canvas)
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "rgb(255,0,0)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Centered text
+        ctx.fillStyle = "yellow";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Click to start", canvas.width / 2, canvas.height / 2);
+
+        // Listen only on the canvas (so clicks outside don't count)
+        canvas.addEventListener("mousedown", tmpmouse, false);
       }
     </script>
     <center>
