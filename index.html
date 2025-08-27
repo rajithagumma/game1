@@ -18,7 +18,7 @@
         justify-content: center;
         align-items: center;
       }
-      button{
+      button {
         display: none;
       }
     </style>
@@ -45,13 +45,15 @@
 
           setTimeout(() => {
             main();
-          }, 300); 
+          }, 300);
         }
       }
 
       function whenloaded() {
         tmp1 = document.getElementById("exp");
         tmp2 = tmp1.getContext("2d");
+        tmp2.fillStyle = "black";
+        tmp2.fillRect(0, 0, 800, 600);
         tmp2.fillStyle = "rgb(255,0,0)";
         tmp2.fillRect(175, 125, 450, 350);
         tmp2.fillStyle = "yellow";
@@ -61,14 +63,14 @@
         window.addEventListener("mousedown", tmpmouse, false);
         var canvasbox = document.getElementById("cbox");
         iswebkit = RegExp("webkit").test(navigator.userAgent.toLowerCase());
-        canvasbox.addEventListener(
-          iswebkit ? "webkitfullscreenchange" : "fullscreenchange",
-          (event) => {
-            if (document.fullscreenElement == null) {
-              psy_screen_scale(1, false);
-            }
-          }
-        );
+        // canvasbox.addEventListener(
+        //   iswebkit ? "webkitfullscreenchange" : "fullscreenchange",
+        //   (event) => {
+        //     if (document.fullscreenElement == null) {
+        //       psy_screen_scale(1, false);
+        //     }
+        //   }
+        // );
       }
     </script>
     <center>
